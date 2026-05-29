@@ -1,0 +1,152 @@
+# general settings
+name: LoViF_AllTracks_Restormer
+model_type: ImageCleanModel
+scale: 1
+num_gpu: 1
+manual_seed: 42
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: LoViF_AllTracks
+    type: ConcatLoViFDataset
+    tracks:
+      Blur:    {gt: /media/wwl/F274D29874D25EC3/lyx/Train/Blur/GT, lq: /media/wwl/F274D29874D25EC3/lyx/Train/Blur/LQ}
+      Haze:    {gt: /media/wwl/F274D29874D25EC3/lyx/Train/Haze/GT, lq: /media/wwl/F274D29874D25EC3/lyx/Train/Haze/LQ}
+      Lowlight: {gt: /media/wwl/F274D29874D25EC3/lyx/Train/Lowlight/GT, lq: /media/wwl/F274D29874D25EC3/lyx/Train/Lowlight/LQ}
+      Rain:    {gt: /media/wwl/F274D29874D25EC3/lyx/Train/Rain/GT, lq: /media/wwl/F274D29874D25EC3/lyx/Train/Rain/LQ}
+      Snow:    {gt: /media/wwl/F274D29874D25EC3/lyx/Train/Snow/GT, lq: /media/wwl/F274D29874D25EC3/lyx/Train/Snow/LQ}
+    geometric_augs: true
+
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+    use_shuffle: true
+    num_worker_per_gpu: 8
+    batch_size_per_gpu: 2
+
+    ### ------- Fixed patch size 128x128 (8GB VRAM friendly) -----
+    mini_batch_sizes: [2]
+    iters: [300000]
+    gt_size: 128
+    gt_sizes: [128]
+    ### ------------------------------------------------------------
+
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  val_blur:
+    name: LoViF_Val_Blur
+    type: Dataset_PairedImage
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Blur/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Blur/LQ
+    io_backend:
+      type: disk
+  val_haze:
+    name: LoViF_Val_Haze
+    type: Dataset_PairedImage
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Haze/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Haze/LQ
+    io_backend:
+      type: disk
+  val_lowlight:
+    name: LoViF_Val_Lowlight
+    type: Dataset_PairedImage
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Lowlight/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Lowlight/LQ
+    io_backend:
+      type: disk
+  val_rain:
+    name: LoViF_Val_Rain
+    type: Dataset_PairedImage
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Rain/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Rain/LQ
+    io_backend:
+      type: disk
+  val_snow:
+    name: LoViF_Val_Snow
+    type: Dataset_PairedImage
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Snow/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Snow/LQ
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: Restormer
+  inp_channels: 3
+  out_channels: 3
+  dim: 48
+  num_blocks: [4,6,6,8]
+  num_refinement_blocks: 4
+  heads: [1,2,4,8]
+  ffn_expansion_factor: 2.66
+  bias: False
+  LayerNorm_type: WithBias
+  dual_pixel_task: False
+
+# path
+path:
+  pretrain_network_g: ~
+  strict_load_g: true
+  resume_state: ~
+
+# training settings
+train:
+  total_iter: 300000
+  warmup_iter: 500
+  gradient_accumulation_steps: 8
+  use_grad_clip: true
+
+  scheduler:
+    type: CosineAnnealingRestartCyclicLR
+    periods: [92000, 208000]
+    restart_weights: [1,1]
+    eta_mins: [0.0003,0.000001]
+
+  mixing_augs:
+    mixup: false
+    mixup_beta: 1.2
+    use_identity: true
+
+  optim_g:
+    type: AdamW
+    lr: !!float 3e-4
+    weight_decay: !!float 1e-4
+    betas: [0.9, 0.999]
+
+  pixel_opt:
+    type: L1Loss
+    loss_weight: 1
+    reduction: mean
+
+# validation settings
+val:
+  window_size: 8
+  val_freq: !!float 4e3
+  save_img: false
+  rgb2bgr: true
+  use_image: true
+  max_minibatch: 8
+  metrics:
+    psnr:
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+    lpips:
+      type: calculate_lpips
+      better: lower
+
+# logging settings
+logger:
+  print_freq: 1000
+  save_checkpoint_freq: !!float 4e3
+  use_tb_logger: true
+  wandb:
+    project: ~
+    resume_id: ~
