@@ -51,6 +51,12 @@ class BaseModel():
             return self.nondist_validation(dataloader, current_iter, tb_logger,
                                     save_img, rgb2bgr, use_image)
 
+    def nondist_validation(self, dataloader, current_iter, tb_logger, save_img=False, rgb2bgr=True, use_image=True):
+        """Fallback: log warning if subclass doesn't implement validation."""
+        logger = get_root_logger()
+        logger.warning(f'Validation not implemented for {self.__class__.__name__}. Skipping.')
+        return {}, 0.0
+
     def model_ema(self, decay=0.999):
         net_g = self.get_bare_model(self.net_g)
 
