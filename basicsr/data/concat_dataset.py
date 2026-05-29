@@ -1,6 +1,6 @@
 import copy
 from torch.utils import data as data
-from basicsr.data.paired_image_dataset import PairedImageDataset
+from basicsr.data.paired_image_dataset import Dataset_PairedImage as PairedImageDataset
 from basicsr.utils.registry import DATASET_REGISTRY
 
 
