@@ -39,36 +39,36 @@ datasets:
   val_blur:
     name: LoViF_Val_Blur
     type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/test/Blur/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/test/Blur/LQ
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Blur/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Blur/LQ
     io_backend:
       type: disk
   val_haze:
     name: LoViF_Val_Haze
     type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/test/Haze/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/test/Haze/LQ
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Haze/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Haze/LQ
     io_backend:
       type: disk
   val_lowlight:
     name: LoViF_Val_Lowlight
     type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/test/Lowlight/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/test/Lowlight/LQ
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Lowlight/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Lowlight/LQ
     io_backend:
       type: disk
   val_rain:
     name: LoViF_Val_Rain
     type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/test/Rain/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/test/Rain/LQ
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Rain/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Rain/LQ
     io_backend:
       type: disk
   val_snow:
     name: LoViF_Val_Snow
     type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/test/Snow/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/test/Snow/LQ
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Snow/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Snow/LQ
     io_backend:
       type: disk
 
