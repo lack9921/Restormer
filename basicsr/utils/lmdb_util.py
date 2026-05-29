@@ -1,5 +1,9 @@
 import cv2
-import lmdb
+try:
+    import lmdb
+except ImportError:
+    lmdb = None
+
 import sys
 from multiprocessing import Pool
 from os import path as osp
