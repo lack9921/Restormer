@@ -1,13 +1,12 @@
 {
     "name": "Restormer CVPR2022 - Blackwell",
-    "build": {
-        "context": ".",
-        "dockerfile": "Dockerfile"
-    },
     "runArgs": [
-        "--gpus", "all",
-        "--shm-size", "16gb",
-        "--env", "CUDA_VISIBLE_DEVICES=0"
+        "--gpus",
+        "all",
+        "--shm-size",
+        "16gb",
+        "--env",
+        "CUDA_VISIBLE_DEVICES=0"
     ],
     "mounts": [
         "source=D:\\02_Datasets,target=/datasets_host,type=bind,consistency=cached"
@@ -23,5 +22,6 @@
     "workspaceFolder": "/workspace",
     "remoteUser": "root",
     "shutdownAction": "none",
-    "postCreateCommand": "cd /workspace && python setup.py develop --no_cuda_ext && echo 'Restormer ready!'"
+    "postCreateCommand": "cd /workspace && python setup.py develop --no_cuda_ext && echo 'Restormer ready!'",
+    "image": "restormer:latest"
 }
