@@ -332,8 +332,8 @@ def calculate_lpips(img, img2, crop_border=0, test_y_channel=False, better='lowe
     if img.shape[1] == 1:
         img = img.repeat(1, 3, 1, 1)
         img2 = img2.repeat(1, 3, 1, 1)
-    img_norm = img * 2.0 - 1.0
-    img2_norm = img2 * 2.0 - 1.0
+    img_norm = (img / 255.0) * 2.0 - 1.0
+    img2_norm = (img2 / 255.0) * 2.0 - 1.0
     if img.shape[-1] != 224 or img.shape[-2] != 224:
         img_norm = F.interpolate(img_norm, size=(224, 224), mode='bilinear', align_corners=False)
         img2_norm = F.interpolate(img2_norm, size=(224, 224), mode='bilinear', align_corners=False)
