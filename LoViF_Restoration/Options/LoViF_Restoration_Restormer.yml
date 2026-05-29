@@ -88,7 +88,8 @@ path:
 # training settings
 train:
   total_iter: 153125
-  warmup_iter: -1
+  warmup_iter: 500
+  gradient_accumulation_steps: 8
   use_grad_clip: true
 
   scheduler:
