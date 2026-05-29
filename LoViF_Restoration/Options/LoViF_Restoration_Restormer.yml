@@ -126,6 +126,13 @@ val:
       type: calculate_psnr
       crop_border: 0
       test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+    lpips:
+      type: calculate_lpips
+      better: lower
 
 # logging settings
 logger:

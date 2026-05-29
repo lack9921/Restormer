@@ -301,3 +301,34 @@ def calculate_ssim(img1,
         # ssims.append(skimage.metrics.structural_similarity(img1[..., i], img2[..., i], multichannel=False))
 
     return np.array(ssims).mean()
+
+@METRIC_REGISTRY.register()
+def calculate_lpips(img, img2, crop_border=0, test_y_channel=False, better='lower', **kwargs):
+    import lpips
+    import torch
+    import torch.nn.functional as F
+    import numpy as np
+
+    if isinstance(img, np.ndarray):
+        img = torch.from_numpy(img).float()
+        img2 = torch.from_numpy(img2).float()
+
+    if not hasattr(calculate_lpips, '_lpips_model'):
+        device = img.device if hasattr(img, 'device') else 'cuda'
+        calculate_lpips._lpips_model = lpips.LPIPS(net='alex', verbose=False).to(device)
+    else:
+        calculate_lpips._lpips_model = calculate_lpips._lpips_model.to(img.device if hasattr(img, 'device') else 'cuda')
+
+    assert img.shape == img2.shape
+    if crop_border != 0:
+        img = img[:, :, crop_border:-crop_border, crop_border:-crop_border]
+        img2 = img2[:, :, crop_border:-crop_border, crop_border:-crop_border]
+    if img.shape[1] == 1:
+        img = img.repeat(1, 3, 1, 1)
+        img2 = img2.repeat(1, 3, 1, 1)
+    img_norm = img * 2.0 - 1.0
+    img2_norm = img2 * 2.0 - 1.0
+    if img.shape[-1] != 224 or img.shape[-2] != 224:
+        img_norm = F.interpolate(img_norm, size=(224, 224), mode='bilinear', align_corners=False)
+        img2_norm = F.interpolate(img2_norm, size=(224, 224), mode='bilinear', align_corners=False)
+    return calculate_lpips._lpips_model(img_norm, img2_norm).mean().item()
