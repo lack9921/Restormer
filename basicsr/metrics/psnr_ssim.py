@@ -308,15 +308,22 @@ def calculate_lpips(img, img2, crop_border=0, test_y_channel=False, better='lowe
     import torch.nn.functional as F
     import numpy as np
 
+    # Convert numpy HWC to torch CHW (BCHW)
     if isinstance(img, np.ndarray):
-        img = torch.from_numpy(img).float()
-        img2 = torch.from_numpy(img2).float()
+        img = torch.from_numpy(img).permute(2, 0, 1).float().unsqueeze(0)
+        img2 = torch.from_numpy(img2).permute(2, 0, 1).float().unsqueeze(0)
+    elif img.dim() == 3:
+        img = img.unsqueeze(0)
+        img2 = img2.unsqueeze(0)
+
+    device = img.device if hasattr(img, 'device') else 'cuda'
+    img = img.to(device)
+    img2 = img2.to(device)
 
     if not hasattr(calculate_lpips, '_lpips_model'):
-        device = img.device if hasattr(img, 'device') else 'cuda'
         calculate_lpips._lpips_model = lpips.LPIPS(net='alex', verbose=False).to(device)
     else:
-        calculate_lpips._lpips_model = calculate_lpips._lpips_model.to(img.device if hasattr(img, 'device') else 'cuda')
+        calculate_lpips._lpips_model = calculate_lpips._lpips_model.to(device)
 
     assert img.shape == img2.shape
     if crop_border != 0:
