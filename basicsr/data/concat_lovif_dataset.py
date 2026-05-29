@@ -8,36 +8,7 @@ from basicsr.utils.registry import DATASET_REGISTRY
 class ConcatLoViFDataset(data.Dataset):
     """
     Concatenate multiple LoViF track datasets into one big dataset.
-    Each batch randomly samples from any of the 5 tracks.
-
-    Usage in YAML train config:
-        datasets:
-          train:
-            name: LoViF_AllTracks
-            type: ConcatLoViFDataset
-            tracks:
-              Blur:
-                gt: /datasets_host/LoViF 2026/Blur/GT
-                lq: /datasets_host/LoViF 2026/Blur/LQ
-              Haze:
-                gt: /datasets_host/LoViF 2026/Haze/GT
-                lq: /datasets_host/LoViF 2026/Haze/LQ
-              Lowlight:
-                gt: /datasets_host/LoViF 2026/Lowlight/GT
-                lq: /datasets_host/LoViF 2026/Lowlight/LQ
-              Rain:
-                gt: /datasets_host/LoViF 2026/Rain/GT
-                lq: /datasets_host/LoViF 2026/Rain/LQ
-              Snow:
-                gt: /datasets_host/LoViF 2026/Snow/GT
-                lq: /datasets_host/LoViF 2026/Snow/LQ
-            gt_size: 64
-            use_hflip: true
-            use_rot: true
-            scale: 1
-            io_backend: {type: disk}
     """
-
     def __init__(self, opt):
         super().__init__()
         self.opt = opt
