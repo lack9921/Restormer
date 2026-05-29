@@ -81,12 +81,11 @@ def init_loggers(opt):
 def create_train_val_dataloader(opt, logger):
     # create train and val dataloaders
     train_loader, val_loader = None, None
+    train_loader, val_loaders = None, []
     for phase, dataset_opt in opt['datasets'].items():
         if phase == 'train':
-            dataset_enlarge_ratio = dataset_opt.get('dataset_enlarge_ratio', 1)
             train_set = create_dataset(dataset_opt)
-            train_sampler = EnlargedSampler(train_set, opt['world_size'],
-                                            opt['rank'], dataset_enlarge_ratio)
+            train_sampler = EnlargedSampler(train_set, opt['world_size'])
             train_loader = create_dataloader(
                 train_set,
                 dataset_opt,
@@ -94,22 +93,13 @@ def create_train_val_dataloader(opt, logger):
                 dist=opt['dist'],
                 sampler=train_sampler,
                 seed=opt['manual_seed'])
-
-            num_iter_per_epoch = math.ceil(
-                len(train_set) * dataset_enlarge_ratio /
-                (dataset_opt['batch_size_per_gpu'] * opt['world_size']))
-            total_iters = int(opt['train']['total_iter'])
-            total_epochs = math.ceil(total_iters / (num_iter_per_epoch))
             logger.info(
-                'Training statistics:'
-                f'\n\tNumber of train images: {len(train_set)}'
-                f'\n\tDataset enlarge ratio: {dataset_enlarge_ratio}'
-                f'\n\tBatch size per gpu: {dataset_opt["batch_size_per_gpu"]}'
-                f'\n\tWorld size (gpu number): {opt["world_size"]}'
-                f'\n\tRequire iter number per epoch: {num_iter_per_epoch}'
-                f'\n\tTotal epochs: {total_epochs}; iters: {total_iters}.')
-
-        elif phase == 'val':
+                f'Number of train images: {len(train_set)}, '
+                f'patch size: {dataset_opt["gt_size"]}')
+            total_epochs = int(
+                dataset_opt['total_iter'] / len(train_loader) + 1)
+            total_iters = dataset_opt['total_iter']
+        elif phase == 'val' or phase.startswith('val_'):
             val_set = create_dataset(dataset_opt)
             val_loader = create_dataloader(
                 val_set,
@@ -119,12 +109,13 @@ def create_train_val_dataloader(opt, logger):
                 sampler=None,
                 seed=opt['manual_seed'])
             logger.info(
-                f'Number of val images/folders in {dataset_opt["name"]}: '
+                f'Number of val images in {dataset_opt["name"]}: '
                 f'{len(val_set)}')
+            val_loaders.append(val_loader)
         else:
             raise ValueError(f'Dataset phase {phase} is not recognized.')
 
-    return train_loader, train_sampler, val_loader, total_epochs, total_iters
+    return train_loader, train_sampler, val_loaders, total_epochs, total_iters
 
 
 def main():
@@ -169,7 +160,7 @@ def main():
 
     # create train and validation dataloaders
     result = create_train_val_dataloader(opt, logger)
-    train_loader, train_sampler, val_loader, total_epochs, total_iters = result
+    train_loader, train_sampler, val_loaders, total_epochs, total_iters = result
 
     # create model
     if resume_state:  # resume training
@@ -293,7 +284,8 @@ def main():
                 rgb2bgr = opt['val'].get('rgb2bgr', True)
                 # wheather use uint8 image to compute metrics
                 use_image = opt['val'].get('use_image', True)
-                model.validation(val_loader, current_iter, tb_logger,
+                for val_loader in val_loaders:
+                    model.validation(val_loader, current_iter, tb_logger,
                                  opt['val']['save_img'], rgb2bgr, use_image )
 
             data_time = time.time()
@@ -310,7 +302,8 @@ def main():
     logger.info('Save the latest model.')
     model.save(epoch=-1, current_iter=-1)  # -1 stands for the latest
     if opt.get('val') is not None:
-        model.validation(val_loader, current_iter, tb_logger,
+        for val_loader in val_loaders:
+                    model.validation(val_loader, current_iter, tb_logger,
                          opt['val']['save_img'])
     if tb_logger:
         tb_logger.close()
