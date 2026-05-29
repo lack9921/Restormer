@@ -162,10 +162,10 @@ def main():
     result = create_train_val_dataloader(opt, logger)
     train_loader, train_sampler, val_loaders, total_epochs, total_iters = result
 
-    # create model
-    if resume_state:  # resume training
+# create model
+    if resume_state:
         check_resume(opt, resume_state['iter'])
-        model = create_model(opt)
+    model = create_model(opt)
 
     # ===== [Elvis] Sanity validation at iter 0 =====
     if opt.get("val") is not None and val_loaders:
@@ -176,14 +176,15 @@ def main():
             except Exception as e:
                 logger.error(f"Sanity validation failed: {e}")
                 raise
-        model.resume_training(resume_state)  # handle optimizers and schedulers
-        logger.info(f"Resuming training from epoch: {resume_state['epoch']}, "
-                    f"iter: {resume_state['iter']}.")
+
+    if resume_state:
+        model.resume_training(resume_state)
+        logger.info(f"Resuming training from epoch: {resume_state['epoch']}, iter: {resume_state['iter']}.")
         start_epoch = resume_state['epoch']
         current_iter = resume_state['iter']
     else:
-        model = create_model(opt)
         start_epoch = 0
+        current_iter = 0
         current_iter = 0
 
     # create message logger (formatted outputs)
