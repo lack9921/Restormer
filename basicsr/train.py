@@ -85,7 +85,7 @@ def create_train_val_dataloader(opt, logger):
     for phase, dataset_opt in opt['datasets'].items():
         if phase == 'train':
             train_set = create_dataset(dataset_opt)
-            train_sampler = EnlargedSampler(train_set, opt['world_size'])
+            train_sampler = EnlargedSampler(train_set, opt["world_size"], opt["rank"])
             train_loader = create_dataloader(
                 train_set,
                 dataset_opt,
