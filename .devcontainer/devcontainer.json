@@ -9,7 +9,7 @@
         "CUDA_VISIBLE_DEVICES=0"
     ],
     "mounts": [
-        "source=D:\\02_Datasets,target=/datasets_host,type=bind,consistency=cached"
+        "source=D:\\dataset,target=/datasets_host,type=bind,consistency=cached"
     ],
     "customizations": {
         "vscode": {
