@@ -166,6 +166,15 @@ def main():
     if resume_state:  # resume training
         check_resume(opt, resume_state['iter'])
         model = create_model(opt)
+    # ===== [Elvis] Sanity validation at iter 0 =====
+    if opt.get("val") is not None and val_loaders:
+        logger.info("Running sanity validation (iter 0)...")
+        for val_loader in val_loaders:
+            try:
+                model.validation(val_loader, 0, tb_logger, opt["val"]["save_img"])
+            except Exception as e:
+                logger.error(f"Sanity validation failed: {e}")
+                raise
         model.resume_training(resume_state)  # handle optimizers and schedulers
         logger.info(f"Resuming training from epoch: {resume_state['epoch']}, "
                     f"iter: {resume_state['iter']}.")

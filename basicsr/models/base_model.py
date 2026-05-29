@@ -53,10 +53,47 @@ class BaseModel():
 
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img=False, rgb2bgr=True, use_image=True):
         from basicsr.utils import get_root_logger
+        from basicsr.metrics import calculate_metric
+        import torch
+        import os.path as osp
+        import torch.nn.functional as F
+        
         logger = get_root_logger()
-        logger.warning(f'Validation not implemented for {self.__class__.__name__}. Skipping.')
-        return {}, 0.0
-
+        logger.info(f'Running validation at iter {current_iter}...')
+        
+        dataset_name = getattr(dataloader.dataset, 'opt', {}).get('name', 'val')
+        self.net_g.eval()
+        metric_results = {}
+        
+        for idx, val_data in enumerate(dataloader):
+            if idx >= 50:  # Limit to 50 val images per track
+                break
+            self.feed_data(val_data)
+            
+            with torch.no_grad():
+                self.output = self.net_g(self.lq)
+            
+            # Calculate metrics
+            for metric_name, metric_opt in self.opt['val']['metrics'].items():
+                if metric_name not in metric_results:
+                    metric_results[metric_name] = 0
+                
+                # Convert to proper format for metric functions
+                pred_img = self.output.detach().cpu()
+                gt_img = self.gt.detach().cpu()
+                
+                metric_data = {'img': pred_img, 'img2': gt_img}
+                metric_results[metric_name] += calculate_metric(metric_data, metric_opt)
+        
+        # Log results
+        for metric_name, total in metric_results.items():
+            avg = total / (idx + 1)
+            logger.info(f'Validation {dataset_name} - {metric_name}: {avg:.4f}')
+            if tb_logger:
+                tb_logger.add_scalar(f'{dataset_name}/{metric_name}', avg, current_iter)
+        
+        self.net_g.train()
+        logger.info(f'Validation on {dataset_name} done. Processed {idx+1} images.')
     def model_ema(self, decay=0.999):
         net_g = self.get_bare_model(self.net_g)
 
