@@ -11,11 +11,11 @@ datasets:
     name: LoViF_AllTracks
     type: ConcatLoViFDataset
     tracks:
-      Blur:    {gt: /media/wwl/F274D29874D25EC3/lyx/Train/Blur/GT, lq: /media/wwl/F274D29874D25EC3/lyx/Train/Blur/LQ}
-      Haze:    {gt: /media/wwl/F274D29874D25EC3/lyx/Train/Haze/GT, lq: /media/wwl/F274D29874D25EC3/lyx/Train/Haze/LQ}
-      Lowlight: {gt: /media/wwl/F274D29874D25EC3/lyx/Train/Lowlight/GT, lq: /media/wwl/F274D29874D25EC3/lyx/Train/Lowlight/LQ}
-      Rain:    {gt: /media/wwl/F274D29874D25EC3/lyx/Train/Rain/GT, lq: /media/wwl/F274D29874D25EC3/lyx/Train/Rain/LQ}
-      Snow:    {gt: /media/wwl/F274D29874D25EC3/lyx/Train/Snow/GT, lq: /media/wwl/F274D29874D25EC3/lyx/Train/Snow/LQ}
+      Blur:    {gt: /media/wwl/F274D29874D25EC3/lyx/train/Blur/GT, lq: /media/wwl/F274D29874D25EC3/lyx/train/Blur/LQ}
+      Haze:    {gt: /media/wwl/F274D29874D25EC3/lyx/train/Haze/GT, lq: /media/wwl/F274D29874D25EC3/lyx/train/Haze/LQ}
+      Lowlight: {gt: /media/wwl/F274D29874D25EC3/lyx/train/Lowlight/GT, lq: /media/wwl/F274D29874D25EC3/lyx/train/Lowlight/LQ}
+      Rain:    {gt: /media/wwl/F274D29874D25EC3/lyx/train/Rain/GT, lq: /media/wwl/F274D29874D25EC3/lyx/train/Rain/LQ}
+      Snow:    {gt: /media/wwl/F274D29874D25EC3/lyx/train/Snow/GT, lq: /media/wwl/F274D29874D25EC3/lyx/train/Snow/LQ}
     geometric_augs: true
 
     filename_tmpl: '{}'
@@ -39,36 +39,36 @@ datasets:
   val_blur:
     name: LoViF_Val_Blur
     type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Blur/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Blur/LQ
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/test/Blur/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/test/Blur/LQ
     io_backend:
       type: disk
   val_haze:
     name: LoViF_Val_Haze
     type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Haze/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Haze/LQ
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/test/Haze/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/test/Haze/LQ
     io_backend:
       type: disk
   val_lowlight:
     name: LoViF_Val_Lowlight
     type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Lowlight/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Lowlight/LQ
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/test/Lowlight/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/test/Lowlight/LQ
     io_backend:
       type: disk
   val_rain:
     name: LoViF_Val_Rain
     type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Rain/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Rain/LQ
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/test/Rain/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/test/Rain/LQ
     io_backend:
       type: disk
   val_snow:
     name: LoViF_Val_Snow
     type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Snow/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Snow/LQ
+    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/test/Snow/GT
+    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/test/Snow/LQ
     io_backend:
       type: disk
 
