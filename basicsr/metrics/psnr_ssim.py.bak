@@ -302,6 +302,7 @@ def calculate_ssim(img1,
 
     return np.array(ssims).mean()
 
+@METRIC_REGISTRY.register()
 def calculate_lpips(img, img2, crop_border=0, test_y_channel=False, better='lower', **kwargs):
     import lpips
     import torch
