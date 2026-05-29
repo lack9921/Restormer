@@ -36,55 +36,6 @@ datasets:
     dataset_enlarge_ratio: 1
     prefetch_mode: ~
 
-  val_blur:
-    name: LoViF_Val_Blur
-    type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Blur/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Blur/LQ
-    io_backend:
-      type: disk
-  val_haze:
-    name: LoViF_Val_Haze
-    type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Haze/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Haze/LQ
-    io_backend:
-      type: disk
-  val_lowlight:
-    name: LoViF_Val_Lowlight
-    type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Lowlight/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Lowlight/LQ
-    io_backend:
-      type: disk
-  val_rain:
-    name: LoViF_Val_Rain
-    type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Rain/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Rain/LQ
-    io_backend:
-      type: disk
-  val_snow:
-    name: LoViF_Val_Snow
-    type: Dataset_PairedImage
-    dataroot_gt: /media/wwl/F274D29874D25EC3/lyx/Test/Snow/GT
-    dataroot_lq: /media/wwl/F274D29874D25EC3/lyx/Test/Snow/LQ
-    io_backend:
-      type: disk
-
-# network structures
-network_g:
-  type: Restormer
-  inp_channels: 3
-  out_channels: 3
-  dim: 48
-  num_blocks: [4,6,6,8]
-  num_refinement_blocks: 4
-  heads: [1,2,4,8]
-  ffn_expansion_factor: 2.66
-  bias: False
-  LayerNorm_type: WithBias
-  dual_pixel_task: False
 
 # path
 path:
@@ -120,27 +71,6 @@ train:
     type: L1Loss
     loss_weight: 1
     reduction: mean
-
-# validation settings
-val:
-  window_size: 8
-  val_freq: !!float 4e3
-  save_img: false
-  rgb2bgr: true
-  use_image: true
-  max_minibatch: 8
-  metrics:
-    psnr:
-      type: calculate_psnr
-      crop_border: 0
-      test_y_channel: false
-    ssim:
-      type: calculate_ssim
-      crop_border: 0
-      test_y_channel: false
-    lpips:
-      type: calculate_lpips
-      better: lower
 
 # logging settings
 logger:
