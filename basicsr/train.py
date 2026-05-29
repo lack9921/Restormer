@@ -97,8 +97,8 @@ def create_train_val_dataloader(opt, logger):
                 f'Number of train images: {len(train_set)}, '
                 f'patch size: {dataset_opt["gt_size"]}')
             total_epochs = int(
-                dataset_opt['total_iter'] / len(train_loader) + 1)
-            total_iters = dataset_opt['total_iter']
+                opt['train']['total_iter'] / len(train_loader) + 1)
+            total_iters = opt['train']['total_iter']
         elif phase == 'val' or phase.startswith('val_'):
             val_set = create_dataset(dataset_opt)
             val_loader = create_dataloader(
