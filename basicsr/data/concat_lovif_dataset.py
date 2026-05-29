@@ -1,13 +1,12 @@
 import copy
 from torch.utils import data as data
 from basicsr.data.paired_image_dataset import Dataset_PairedImage as PairedImageDataset
-from basicsr.utils.registry import DATASET_REGISTRY
 
 
-@DATASET_REGISTRY.register()
 class ConcatLoViFDataset(data.Dataset):
     """
     Concatenate multiple LoViF track datasets into one big dataset.
+    Each batch randomly samples from any of the 5 tracks.
     """
     def __init__(self, opt):
         super().__init__()
