@@ -32,7 +32,8 @@ class BaseModel():
 
     def save(self, epoch, current_iter):
         """Save networks and training state."""
-        pass
+        self.save_network(self.net_g, 'net_g', current_iter)
+        self.save_training_state(epoch, current_iter)
 
     def validation(self, dataloader, current_iter, tb_logger, save_img=False, rgb2bgr=True, use_image=True):
         """Validation function.
