@@ -58,8 +58,14 @@ class GradientAccumWrapper:
         return self.should_step()
 
     def should_step(self):
-        """Whether the current micro-batch completes an accumulation window."""
-        return self._enabled and self._step % self._accum_steps == 0
+        """Whether the current micro-batch completes an accumulation window.
+
+        When accumulation is disabled (``accum_steps=1``), always returns
+        ``True`` so that every call to ``backward()`` is followed by a step.
+        """
+        if not self._enabled:
+            return True
+        return self._step % self._accum_steps == 0
 
     def step(self):
         """Take an optimizer step **and** reset the internal counter."""
