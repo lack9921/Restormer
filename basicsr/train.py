@@ -185,7 +185,6 @@ def main():
     else:
         start_epoch = 0
         current_iter = 0
-        current_iter = 0
 
     # create message logger (formatted outputs)
     msg_logger = MessageLogger(opt, current_iter, tb_logger)

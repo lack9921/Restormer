@@ -8,6 +8,7 @@ from tqdm import tqdm
 from basicsr.models.archs import define_network
 from basicsr.models.base_model import BaseModel
 from basicsr.utils import get_root_logger, imwrite, tensor2img
+from basicsr.utils.gradient_accum import GradientAccumWrapper
 
 loss_module = importlib.import_module('basicsr.models.losses')
 metric_module = importlib.import_module('basicsr.metrics')
@@ -80,7 +81,6 @@ class ImageCleanModel(BaseModel):
         train_opt = self.opt['train']
 
         self.ema_decay = train_opt.get('ema_decay', 0)
-        self.grad_accum_steps = train_opt.get("gradient_accumulation_steps", 1)
         if self.ema_decay > 0:
             logger = get_root_logger()
             logger.info(
@@ -112,6 +112,12 @@ class ImageCleanModel(BaseModel):
         # set up optimizers and schedulers
         self.setup_optimizers()
         self.setup_schedulers()
+
+        # wrap optimizer with gradient accumulation
+        accum_steps = train_opt.get('gradient_accumulation_steps', 1)
+        self.accum = GradientAccumWrapper(self.optimizer_g, accum_steps)
+        if accum_steps > 1:
+            logger.info(f'Gradient accumulation enabled: {accum_steps} micro-steps per update')
 
     def setup_optimizers(self):
         train_opt = self.opt['train']
@@ -148,9 +154,7 @@ class ImageCleanModel(BaseModel):
             self.gt = data['gt'].to(self.device)
 
     def optimize_parameters(self, current_iter):
-        # gradient accumulation: zero_grad only on first sub-step
-        if current_iter % self.grad_accum_steps == 0:
-            self.optimizer_g.zero_grad()
+        self.accum.zero_grad()
 
         preds = self.net_g(self.lq)
         if not isinstance(preds, list):
@@ -166,16 +170,14 @@ class ImageCleanModel(BaseModel):
 
         loss_dict['l_pix'] = l_pix
 
-        # scale loss for gradient accumulation
-        l_pix = l_pix / self.grad_accum_steps
-        l_pix.backward()
+        # backward (auto-scaled by accum_steps inside wrapper)
+        should_step = self.accum.backward(l_pix)
 
         if self.opt['train']['use_grad_clip']:
             torch.nn.utils.clip_grad_norm_(self.net_g.parameters(), 0.01)
 
-        # step optimizer only on last sub-step
-        if (current_iter + 1) % self.grad_accum_steps == 0:
-            self.optimizer_g.step()
+        if should_step:
+            self.accum.step()
 
         self.log_dict = self.reduce_loss_dict(loss_dict)
 
