@@ -1,0 +1,47 @@
+# general settings
+name: LoViF_Inference
+model_type: ImageCleanModel
+scale: 1
+num_gpu: 1
+manual_seed: 42
+
+# dataset and data loader settings
+datasets:
+  test:
+    name: LoViF_Test
+    type: SingleImageDataset
+    dataroot_lq: /你的/LQ图片目录/     # <-- 用户自行填写
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: Restormer
+  inp_channels: 3
+  out_channels: 3
+  dim: 48
+  num_blocks: [4,6,6,8]
+  num_refinement_blocks: 4
+  heads: [1,2,4,8]
+  ffn_expansion_factor: 2.66
+  bias: False
+  LayerNorm_type: WithBias
+  dual_pixel_task: False
+
+# path
+path:
+  pretrain_network_g: /你的/权重.pth   # <-- 用户自行填写
+  strict_load_g: true
+  resume_state: ~
+
+# validation settings (inference mode)
+val:
+  window_size: 8
+  save_img: true
+  rgb2bgr: true
+  use_image: true
+
+# logging settings
+logger:
+  save_checkpoint_freq: !!float 4e3
+  use_tb_logger: false

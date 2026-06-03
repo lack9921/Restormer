@@ -280,7 +280,8 @@ class ImageCleanModel(BaseModel):
                         f'{img_name}_gt.png')
                     
                 imwrite(sr_img, save_img_path)
-                imwrite(gt_img, save_gt_img_path)
+                if 'gt' in visuals:
+                    imwrite(gt_img, save_gt_img_path)
 
             if with_metrics:
                 # calculate metrics
