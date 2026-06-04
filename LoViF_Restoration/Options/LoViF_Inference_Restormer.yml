@@ -38,6 +38,7 @@ path:
 val:
   window_size: 8
   save_img: true
+  save_ext: .jpg
   rgb2bgr: true
   use_image: true
 

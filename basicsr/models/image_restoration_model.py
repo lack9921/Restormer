@@ -225,6 +225,7 @@ class ImageCleanModel(BaseModel):
     def nondist_validation(self, dataloader, current_iter, tb_logger,
                            save_img, rgb2bgr, use_image):
         dataset_name = dataloader.dataset.opt['name']
+        save_ext = self.opt['val'].get('save_ext', '.png')
         with_metrics = self.opt['val'].get('metrics') is not None
         if with_metrics:
             self.metric_results = {
@@ -265,19 +266,19 @@ class ImageCleanModel(BaseModel):
                     
                     save_img_path = osp.join(self.opt['path']['visualization'],
                                              img_name,
-                                             f'{img_name}_{current_iter}.png')
+                                             f'{img_name}_{current_iter}{save_ext}')
                     
                     save_gt_img_path = osp.join(self.opt['path']['visualization'],
                                              img_name,
-                                             f'{img_name}_{current_iter}_gt.png')
+                                             f'{img_name}_{current_iter}_gt{save_ext}')
                 else:
                     
                     save_img_path = osp.join(
                         self.opt['path']['visualization'], dataset_name,
-                        f'{img_name}.png')
+                        f'{img_name}{save_ext}')
                     save_gt_img_path = osp.join(
                         self.opt['path']['visualization'], dataset_name,
-                        f'{img_name}_gt.png')
+                        f'{img_name}_gt{save_ext}')
                     
                 imwrite(sr_img, save_img_path)
                 if 'gt' in visuals:
